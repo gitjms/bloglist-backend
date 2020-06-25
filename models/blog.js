@@ -4,23 +4,27 @@ mongoose.set('useCreateIndex', true)
 
 const uniqueValidator = require('mongoose-unique-validator')
 
-const personSchema = new mongoose.Schema({
-  name: {
+const blogSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  author: {
     type: String,
     minlength: 3,
     required: true,
     unique: true,
     uniqueCaseInsensitive: true
   },
-  number: {
+  url: {
     type: String,
-    minlength: 8,
     required: true
-  }
+  },
+  likes:  Number
 })
-personSchema.plugin(uniqueValidator)
+blogSchema.plugin(uniqueValidator)
 
-personSchema.set('toJSON', {
+blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
@@ -28,4 +32,4 @@ personSchema.set('toJSON', {
   }
 })
 
-module.exports = mongoose.model('Person', personSchema)
+module.exports = mongoose.model('Blog', blogSchema)
