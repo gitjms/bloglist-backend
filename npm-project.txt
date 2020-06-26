@@ -106,3 +106,10 @@ node_modules/.bin/eslint --init
   // ...
 }
 npm run lint
+
+syötä arvoja mongolla:
+node mongo.js jmsMdb2# "Jonkun vaan ploki" "Joku Vaan" "http://nytteniijjoo.com" 56
+
+Tulosta blogit mongolla:
+node mongo.js jmsMdb2#
+

@@ -1,18 +1,22 @@
 const mongoose = require('mongoose')
 
-if (process.argv.length<3) {
+if (process.argv.length < 3) {
   console.log('give password as argument')
   process.exit(1)
-} else if (process.argv.length>7) {
+} else if (process.argv.length > 7) {
   console.log('Too much arguments. Give a two part name in quotes: \'Donald Duck\'.')
+  process.exit(1)
+} else if (process.argv.length !== 3 && process.argv.length !== 7) {
+  console.log('Wrong amout of arguments.')
   process.exit(1)
 }
 
 const input = {
-  title: process.argv[2],
-  author: process.argv[3],
-  url: process.argv[4],
-  likes: process.argv[5],
+  password: process.argv[2],
+  title: process.argv[3],
+  author: process.argv[4],
+  url: process.argv[5],
+  likes: process.argv[6],
 }
 
 const url =
@@ -40,16 +44,15 @@ if (process.argv.length === 3) {
     mongoose.connection.close()
   })
 } else if (process.argv.length === 7) {
-  const person = new Blog({
-    password: input.password,
+  const blog = new Blog({
     title: input.title,
     author: input.author,
     url: input.url,
-    likes: Number(input.likes),
+    likes: input.likes,
   })
 
-  person.save().then(() => {
-    console.log('added',blog.title,blog.author,'to bloglist')
+  blog.save().then(() => {
+    console.log('added',blog.title,'by',blog.author,'to bloglist')
     mongoose.connection.close()
   })
 } else {

@@ -36,7 +36,7 @@ blogRouter.get('/:id', (request, response, next) => {
 
 blogRouter.post('/', (request, response, next) => {
 // blogRouter.post('/', async (request, response, next) => {
-  const body = request.body.content
+  const body = request.body
   console.log(body)
 
   const blog = new Blog({
