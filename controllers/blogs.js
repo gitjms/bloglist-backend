@@ -21,7 +21,7 @@ blogRouter.get('/:id', (request, response, next) => {
       }
     })
     .catch(error => next(error))
-  
+
   // try{
   //   const blogs = await Blog.findById(request.params.id)
   //    if (blog) {

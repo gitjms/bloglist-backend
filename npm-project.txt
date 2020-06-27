@@ -1,6 +1,10 @@
+ALUSTA NODE-PROJEKTI
+
 npm init
 
+-----------------------------------------------------
 RAKENNE
+
 ├── index.js
 ├── app.js
 ├── build
@@ -14,7 +18,10 @@ RAKENNE
 ├── utils
 │   ├── logger.js
 │   ├── config.js
-│   └── middleware.js  
+│   └── middleware.js
+
+-----------------------------------------------------
+MUOKKAA PACKAGE.JSONia
 
 package.json:
 "scripts": {
@@ -22,11 +29,20 @@ package.json:
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 
+-----------------------------------------------------
+EXPRESS
+
 npm install express --save
+
+-----------------------------------------------------
+JOS ONGELMIA KIRJASTOJEN KANSSA
 
 (npm update)
 (jos joskus pitää poistaa ladattuja, poista node_modules ja package.json,
 sitten npm install)
+
+-----------------------------------------------------
+DEVAUSAJO-HELPPI (suorita ohjelmaa ja muutokset päivittyy heti)
 
 npm install --save-dev nodemon
 Jos nodemon-riippuvuus menee normaaliin "dependencies"-ryhmään, lisää deviinkin:
@@ -45,18 +61,29 @@ package.json:
   // ..
 }
 
+-----------------------------------------------------
+OHJELMAN AJO
+
 Aja: npm run dev
-->  http://localhost:
+->  http://localhost:<portti>
+
+-----------------------------------------------------
 
 npm install morgan
 
 npm install cors --save
+
+-----------------------------------------------------
+PROCFILE HEROKUA VARTEN / HEROKU
 
 Procfile: web: node index.js
 
 heroku create <app-name>
 git commit --allow-empty -m "heroku"
 git push heroku master
+
+-----------------------------------------------------
+FRONTEND BACKENDIIN + SCRIPT-HELPIT
 
 FRONTEND tuotantoversio:
 npm run build
@@ -79,23 +106,38 @@ npm run deploy:full
 
 "proxy": "http://localhost:3001"
 
+-----------------------------------------------------
+DEBUG
+
 Debug in Chrome:
 node --inspect index.js
+
+-----------------------------------------------------
+MONGO CONNECTION
 
 MongoDB connection string:
 mongodb+srv://jariDB:jmsMdb2%23@cluster0-wnvyv.mongodb.net/bloglist-app?retryWrites=true&w=majority
 TAI
 mongodb+srv://jariDB:jmsMdb2%23@cluster0-wnvyv.mongodb.net/bloglist-app?retryWrites=true&w=majority
 
+-----------------------------------------------------
+MONGOOSE + VALIDATORS
+
 npm install mongoose --save
 
 npm install --save mongoose-unique-validator
+
+-----------------------------------------------------
+DOTENV FOR MONGO PASSWORD
 
 npm install dotenv --save
 .env:
 MONGODB_URI=mongodb+srv://jariDB:jmsMdb2%23@cluster0-wnvyv.mongodb.net/bloglist-app?retryWrites=true&w=majority
 
 heroku config:set MONGODB_URI=mongodb+srv://jariDB:jmsMdb2%23@cluster0-wnvyv.mongodb.net/bloglist-app?retryWrites=true&w=majority
+
+-----------------------------------------------------
+LINT
 
 BACKEND:
 npm install eslint --save-dev
@@ -107,9 +149,107 @@ node_modules/.bin/eslint --init
 }
 npm run lint
 
+-----------------------------------------------------
+
 syötä arvoja mongolla:
 node mongo.js jmsMdb2# "Jonkun vaan ploki" "Joku Vaan" "http://nytteniijjoo.com" 56
 
 Tulosta blogit mongolla:
 node mongo.js jmsMdb2#
+
+-----------------------------------------------------
+TESTAUS
+
+npm install --save-dev jest
+
+npm test (kaikki testit)
+
+npm test -- -t 'testin nimi' (yksi testi)
+
+JEST-DEBUGGAUS
+Place a debugger; statement in any of your tests, and then,
+in your project's directory, run:
+
+node --inspect-brk node_modules/.bin/jest --runInBand [any other arguments here]
+or on Windows
+node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand [any other arguments here]
+
+sitten Chromessa:
+
+chrome://inspect -> click on "Open Dedicated DevTools for Node"
+
+tai
+
+node --inspect index.js
+
+---------------
+
+TAI VS CODESSA:
+
+node --inspect-brk node_modules/.bin/jest --runInBand [any other arguments here]
+or on Windows
+node --inspect-brk ./node_modules/jest/bin/jest.js --runInBand [any other arguments here]
+
+launch.json config:
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach",
+      "port": 9229
+    }
+  ]
+}
+
+TAI
+
+VS CODEEn pysyvät configit:
+
+launch.json config (backend):
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/jest/bin/jest.js",
+        "--runInBand"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    }
+  ]
+}
+
+launch.json config (frontend, eli kun luotu create-react-app):
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug CRA Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/react-scripts",
+      "args": ["test", "--runInBand", "--no-cache", "--env=jsdom"],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
+
+-----------------------------------------------------
+ARRAY MANIPULATIONS
+
+npm i --save lodash
 
