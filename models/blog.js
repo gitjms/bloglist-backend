@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator')
 mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true)
 
-const uniqueValidator = require('mongoose-unique-validator')
 
 const blogSchema = new mongoose.Schema({
   title: {
@@ -20,7 +20,11 @@ const blogSchema = new mongoose.Schema({
     unique: true,
     uniqueCaseInsensitive: true
   },
-  likes:  Number
+  likes:  Number,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
 })
 blogSchema.plugin(uniqueValidator)
 
