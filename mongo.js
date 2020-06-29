@@ -19,6 +19,11 @@ const input = {
   likes: process.argv[6],
 }
 
+if (input.password.length < 3) {
+  console.log('password should be at least 3 characters')
+  mongoose.connection.close()
+}
+
 const url =
   `mongodb+srv://jariDB:${input.password}@cluster0-wnvyv.mongodb.net/bloglist-app?retryWrites=true&w=majority`
 

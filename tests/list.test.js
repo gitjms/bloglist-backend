@@ -1,4 +1,4 @@
-const listHelper = require('../utils/list_helper')
+const listHelper = require('./list_helper')
 const helper = require('./test_helper')
 
 describe('total likes', () => {
@@ -16,7 +16,7 @@ describe('total likes', () => {
 
   test('of a bigger list is calculated right', () => {
     const result = listHelper.totalLikes(helper.initialBlogs)
-    expect(result).toBe(610)
+    expect(result).toBe(1561)
   })
 
 })

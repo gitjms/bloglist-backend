@@ -290,6 +290,51 @@ passwordHash
 
 npm install bcrypt --save
 
+Jos Windowsissa tulee ongelmia, niin
+
+npm uninstall bcrypt --save
+
+ja asenna bcryptjs
+
+----------------------------------------------------------------------
+kirjautumistoiminto
+
+npm install jsonwebtoken --save
+
+----------------------------------------------------------------------
+https
+
+npm i node-rsa
+
+luo sertifikaatti:
+openssl genrsa -out key.pem
+openssl req -new -key key.pem -out csr.pem
+openssl x509 -req -days 9999 -in csr.pem -signkey key.pem -out cert.pem
+rm csr.pem
+
+index.js:
+
+const http = require('http')
+const https = require('https')
+const fs = require('fs')
+...
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+}
+
+http.createServer(app).listen(config.PORT)
+
+const server = https.createServer(options, app)
+
+server.listen(8000, () => {
+  logger.info(`Server running on port ${8000}`)
+})
+
+https://localhost:8000/
+
+----------------------------------------------------------------------
+
 
 
 

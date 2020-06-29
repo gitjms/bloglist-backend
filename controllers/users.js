@@ -1,11 +1,25 @@
 const bcrypt = require('bcrypt')
 const userRouter = require('express').Router()
 const User = require('../models/user')
+const logger = require('../utils/logger')
+
+const password_strength = (password) => {
+  const strongRegex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})')
+  const mediumRegex = new RegExp('^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})')
+
+  if(strongRegex.test(password)) {
+    logger.info('password strength is strong')
+  } else if(mediumRegex.test(password)) {
+    logger.info('password strength is medium')
+  } else {
+    logger.info('password strength is weak')
+  }
+}
 
 userRouter.get('/', async (request, response) => {
   const users = await User.find({})
-    .populate('blogs', { title: 1, author: 1 })
-  response.json(users.map(user => user.toJSON()))
+  // .populate('blogs', { title: 1, author: 1 })
+  response.json(users.map(user => ({ username: user.username, name: user.name, id: user.id })))
 })
 
 userRouter.get('/:id', async (request, response) => {
@@ -19,6 +33,14 @@ userRouter.get('/:id', async (request, response) => {
 
 userRouter.post('/', async (request, response) => {
   const body = request.body
+
+  if (body.password.length < 3) {
+    return response.status(400).json({
+      error: 'password length should be at least 3 characters'
+    })
+  }
+
+  password_strength(body.password)
 
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(body.password, saltRounds)

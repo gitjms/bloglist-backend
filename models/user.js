@@ -13,12 +13,9 @@ const userSchema = mongoose.Schema({
   },
   name:  {
     type: String,
-    minlength: 3,
-    required: true
   },
   passwordHash:  {
     type: String,
-    minlength: 4,
     required: true
   },
   blogs: [
@@ -35,7 +32,6 @@ userSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-    // the passwordHash should not be revealed
     delete returnedObject.passwordHash
   }
 })

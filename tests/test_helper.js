@@ -9,9 +9,27 @@ const mostLikesByAuthor = { author: 'Hannu Hanhi', likes: 951 }
 
 const listWithOneUser = [
   {
+    username: 'root',
+    name: 'Root Proot',
+    password: 'sekret'
+  }
+]
+
+const initialUsers = [
+  {
+    username: 'root',
+    name: 'Root Proot',
+    password: 'sekret'
+  },
+  {
     username: 'jaska',
     name: 'Jaska Jokunen',
-    password: 'jaska',
+    password: 'jaska'
+  },
+  {
+    username: 'aku',
+    name: 'Aku Anka',
+    password: 'akua'
   }
 ]
 
@@ -46,41 +64,52 @@ const initialBlogs = [
   {
     title: 'Blogi 1',
     author: 'Hannu Hanhi',
-    url: 'https://blogs.hannuhanhi.com/1/',
+    url: 'https://blogs.hannuhanhi/1.com/',
     likes: 118
   },
   {
     title: 'Blogi 2',
     author: 'Hannu Hanhi',
-    url: 'https://blogs.hannuhanhi.com/2/',
+    url: 'https://blogs.hannuhanhi/2.com/',
     likes: 270
   },
   {
     title: 'Blogi 3',
     author: 'Hannu Hanhi',
-    url: 'https://blogs.hannuhanhi.com/3/',
+    url: 'https://blogs.hannuhanhi/3.com/',
     likes: 130
   },
   {
     title: 'Blogi 4',
     author: 'Hannu Hanhi',
-    url: 'https://blogs.hannuhanhi.com/4/',
+    url: 'https://blogs.hannuhanhi/4.com/',
     likes: 347
   },
   {
     title: 'Blogi 5',
     author: 'Hannu Hanhi',
-    url: 'https://blogs.hannuhanhi.com/5/',
+    url: 'https://blogs.hannuhanhi/5.com/',
     likes: 86
   }
 ]
 
 const nonExistingId = async () => {
-  const blog = new Blog({ title: 'willremovethissoon' })
+  const blog = new Blog({ title: 'x', author: 'y', url: 'z', user: '_id' })
   await blog.save()
   await blog.remove()
 
-  return blog._id.toString()
+  return blog.id.toString()
+}
+
+const createBlogs = async object => {
+  const users = await usersInDb()
+
+  const blogObjects = object
+    .map(o => new Blog({
+      title: o.title, author: o.author, url: o.url, likes: o.likes, user: users[0].id
+    }))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
 }
 
 const blogsInDb = async () => {
@@ -100,6 +129,8 @@ module.exports = {
   mostLikesByAuthor,
   listWithOneBlog,
   listWithOneUser,
+  initialUsers,
+  createBlogs,
   nonExistingId,
   blogsInDb,
   usersInDb

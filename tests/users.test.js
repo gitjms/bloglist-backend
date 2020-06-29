@@ -11,7 +11,7 @@ describe('when there is initially one user at db', () => {
 
   beforeEach(async () => {
     await User.deleteMany({})
-    await User.insertMany(helper.listWithOneUser)
+    // await User.insertMany(helper.listWithOneUser)
 
     const passwordHash = await bcrypt.hash('sekret', 10)
     const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
@@ -36,7 +36,7 @@ describe('when there is initially one user at db', () => {
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 
-    const usernames = usersAtEnd.map(u => u.username)
+    const usernames = usersAtEnd.map(user => user.username)
     expect(usernames).toContain(newUser.username)
   })
 
