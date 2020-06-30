@@ -185,7 +185,7 @@ describe('deletion of a blog', () => {
     await helper.createBlogs(helper.initialBlogs)
   })
 
-  test('succeeds with status code 204 if id is valid', async () => {
+  test('succeeds with status code 204 if id and token are valid', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
     const userIdAndToken = await helper.getUserIdAndToken()
@@ -200,6 +200,19 @@ describe('deletion of a blog', () => {
 
     const titles = blogsAtEnd.map(r => r.title)
     expect(titles).not.toContainEqual(blogToDelete.title)
+  })
+
+  test('fails with status code 401 if token missing', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', null)
+      .expect(401)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
   })
 
 })

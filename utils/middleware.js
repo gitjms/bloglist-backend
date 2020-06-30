@@ -39,9 +39,20 @@ const custom_morgan = morgan(function (tokens, request, response) {
   ].join(' ')
 })
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    request.token = authorization.substring(7)
+  } else {
+    request.token = null
+  }
+  next()
+}
+
 module.exports =  {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  custom_morgan
+  custom_morgan,
+  tokenExtractor
 }
