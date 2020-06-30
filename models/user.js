@@ -11,13 +11,8 @@ const userSchema = mongoose.Schema({
     unique: true,
     uniqueCaseInsensitive: true
   },
-  name:  {
-    type: String,
-  },
-  passwordHash:  {
-    type: String,
-    required: true
-  },
+  name: String,
+  passwordHash: String,
   blogs: [
     {
       type: mongoose.Schema.Types.ObjectId,

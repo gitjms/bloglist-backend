@@ -1,5 +1,3 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const helper = require('./test_helper')
@@ -14,73 +12,43 @@ describe('when there is initially some blogs saved', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
-    await user.save()
+    await helper.createUsers(helper.listWithOneUser)
 
     await Blog.deleteMany({})
     await helper.createBlogs(helper.initialBlogs)
   })
 
   test('blogs are returned as json', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = jwt.sign(userForToken, process.env.SECRET)
-
+    const userIdAndToken = await helper.getUserIdAndToken()
     await api
       .get('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('all blogs are returned', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = jwt.sign(userForToken, process.env.SECRET)
-
+    const userIdAndToken = await helper.getUserIdAndToken()
     const response = await api
       .get('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
     expect(response.body).toHaveLength(helper.initialBlogs.length)
   })
 
   test('a specific blog is within the returned blogs', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = jwt.sign(userForToken, process.env.SECRET)
-
+    const userIdAndToken = await helper.getUserIdAndToken()
     const response = await api
       .get('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
     const titles = response.body.map(r => r.title)
     expect(titles).toContainEqual('Go To Statement Considered Harmful')
   })
 
   test('blog identification is \'id\', not \'_id\'', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = jwt.sign(userForToken, process.env.SECRET)
-
+    const userIdAndToken = await helper.getUserIdAndToken()
     const response = await api
       .get('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
     const id = response.body.map(r => r.id)
     expect(id).toBeDefined()
   })
@@ -91,9 +59,7 @@ describe('addition of a new blog', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
-    await user.save()
+    await helper.createUsers(helper.listWithOneUser)
 
     await Blog.deleteMany({})
     await helper.createBlogs(helper.initialBlogs)
@@ -101,26 +67,19 @@ describe('addition of a new blog', () => {
 
   test('succeeds with valid data ', async () => {
     const blogsAtStart = await helper.blogsInDb()
-    const users = await helper.usersInDb()
-    const user = users[0]
-
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     const newBlog = {
       title: 'Brand New Blog',
       author: 'John Doe',
       url: 'https://doeblogs.brandnewblog.com/',
       likes: 2,
-      user: user.id
+      user: userIdAndToken[0]
     }
 
     await api
       .post('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -133,24 +92,18 @@ describe('addition of a new blog', () => {
   })
 
   test('succeeds without likes and will have zero likes', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     const newBlog = {
       title: 'Super New Blog',
       author: 'Jane Doe',
       url: 'https://doeblogs.supernewblog.com/',
-      user: user.id
+      user: userIdAndToken[0]
     }
 
     await api
       .post('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -161,14 +114,7 @@ describe('addition of a new blog', () => {
   })
 
   test('fails with status code 400 if data invalid, part 1', async () => {
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
-
+    const userIdAndToken = await helper.getUserIdAndToken()
     const newBlog = {
       author: 'John Doe Blogger',
       likes: 2
@@ -176,31 +122,25 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .send(newBlog)
       .expect(400)
   })
 
   test('fails with status code 400 if data invalid, part 2', async () => {
     const blogsAtStart = await helper.blogsInDb()
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     const newBlog = {
       author: 'John Doe Blogger',
       url: 'https://doeblogs.brandnewblog.com/',
       likes: 2,
-      user:user.id
+      user: userIdAndToken[0]
     }
 
     await api
       .post('/api/blogs')
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .send(newBlog)
       .expect(400)
 
@@ -214,9 +154,7 @@ describe('viewing a specific blog', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
-    await user.save()
+    await helper.createUsers(helper.listWithOneUser)
 
     await Blog.deleteMany({})
     await helper.createBlogs(helper.initialBlogs)
@@ -225,17 +163,11 @@ describe('viewing a specific blog', () => {
   test('succeeds with a valid id', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToView = blogsAtStart[0]
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     const resultBlog = await api
       .get(`/api/blogs/${blogToView.id}`)
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .expect(200)
       .expect('Content-Type', /application\/json/)
     expect(resultBlog.body.author).toEqual(blogToView.author)
@@ -247,9 +179,7 @@ describe('deletion of a blog', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
-    await user.save()
+    await helper.createUsers(helper.listWithOneUser)
 
     await Blog.deleteMany({})
     await helper.createBlogs(helper.initialBlogs)
@@ -258,17 +188,11 @@ describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToDelete = blogsAtStart[0]
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .expect(204)
 
     const blogsAtEnd = await helper.blogsInDb()
@@ -284,9 +208,7 @@ describe('updating likes for a blog', () => {
 
   beforeEach(async () => {
     await User.deleteMany()
-    const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', name: 'Root Proot', passwordHash })
-    await user.save()
+    await helper.createUsers(helper.listWithOneUser)
 
     await Blog.deleteMany({})
     await helper.createBlogs(helper.listWithOneBlog)
@@ -296,20 +218,14 @@ describe('updating likes for a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToUpdate = blogsAtStart[0]
     const oldLikes = blogToUpdate.likes
-    const users = await helper.usersInDb()
-    const user = users[0]
-    const userForToken = {
-      username: user.username,
-      id: user.id,
-    }
-    const token = 'bearer '.concat(jwt.sign(userForToken, process.env.SECRET))
+    const userIdAndToken = await helper.getUserIdAndToken()
 
     blogToUpdate.likes = oldLikes + 10
     await Blog.update(blogToUpdate)
 
     await api
       .get(`/api/blogs/${blogToUpdate.id}`)
-      .set('Authorization', token)
+      .set('Authorization', userIdAndToken[1])
       .expect(200)
       .expect('Content-Type', /application\/json/)
 
