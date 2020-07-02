@@ -8,7 +8,12 @@ blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
     .populate('user', { username: 1, name: 1 })
   response.json(blogs.map(blog => ({
-    url: blog.url, title: blog.title, author: blog.author, user: blog.user, likes: blog.likes, id: blog.id
+    url: blog.url,
+    title: blog.title,
+    author: blog.author,
+    user: blog.user,
+    likes: blog.likes,
+    id: blog.id
   })))
 })
 
@@ -65,18 +70,28 @@ blogRouter.delete('/:id', async (request, response) => {
 blogRouter.put('/:id', async (request, response) => {
   const body = request.body
 
-  const user = await User.findById(body.userId)
+  const user = await User.findById(body.user)
 
   const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
     likes: Number(body.likes),
-    user: user._id
+    user: user.id
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-  response.json(updatedBlog.toJSON())
+  const blogToUpdate = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+
+  const returnBlog ={
+    id: blogToUpdate.id,
+    title: blogToUpdate.title,
+    author: blogToUpdate.author,
+    url: blogToUpdate.url,
+    likes: Number(blogToUpdate.likes),
+    user: user
+  }
+
+  response.json(returnBlog)
 })
 
 module.exports = blogRouter
