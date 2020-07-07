@@ -4,7 +4,10 @@
 # misc
 package-lock.json
 requests
+.vscode
 *.rest
 .DS_Store
 .env
 *.pem
+npm-project.txt
+db.json
