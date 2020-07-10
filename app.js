@@ -1,5 +1,6 @@
 const config = require('./utils/config')
 const express = require('express')
+const helmet = require('helmet')
 require('express-async-errors')
 const app = express()
 const cors = require('cors')
@@ -20,6 +21,7 @@ mongoose.connect( config.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopolog
     console.log('error connecting to MongoDB:', error.message)
   })
 
+app.use(helmet())
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())

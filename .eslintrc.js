@@ -5,7 +5,13 @@ module.exports = {
         'node': true,
         "jest": true,
     },
-    'extends': 'eslint:recommended',
+    "plugins": [
+        "security"
+      ],
+    'extends': [
+        'eslint:recommended',
+        "plugin:security/recommended"
+    ],
     'parserOptions': {
         'ecmaVersion': 11
     },
