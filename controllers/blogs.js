@@ -6,12 +6,13 @@ const User = require('../models/user')
 blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({})
     .populate('user', { username: 1, name: 1 })
+    .populate('comments', { content: 1 })
   response.json(blogs.map(blog => ({
     url: blog.url,
     title: blog.title,
     author: blog.author,
-    user: blog.user,
     likes: blog.likes,
+    user: blog.user,
     comments: blog.comments,
     id: blog.id
   })))
@@ -40,8 +41,8 @@ blogRouter.post('/', async (request, response) => {
     author: body.author,
     url: body.url,
     likes: Number(body.likes) || 0,
-    comments: body.comments,
-    user: user.id
+    user: user.id,
+    comments: body.comments
   })
 
   const savedBlog = await blog.save()
@@ -70,30 +71,29 @@ blogRouter.delete('/:id', async (request, response) => {
 blogRouter.put('/:id', async (request, response) => {
   const body = request.body
 
-  const user = await User.findById(body.user)
-
   const blog = {
     title: body.title,
     author: body.author,
     url: body.url,
-    user: user.id,
     likes: Number(body.likes),
+    user: body.user.id,
     comments: body.comments
   }
 
   const blogToUpdate = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  console.log('blogToUpdate: ',blogToUpdate)
 
-  const returnBlog ={
+  const returnedBlog ={
     id: blogToUpdate.id,
     title: blogToUpdate.title,
     author: blogToUpdate.author,
     url: blogToUpdate.url,
-    user: user,
     likes: Number(blogToUpdate.likes),
+    user: blogToUpdate.user,
     comments: blogToUpdate.comments
   }
 
-  response.json(returnBlog)
+  response.json(returnedBlog)
 })
 
 module.exports = blogRouter
