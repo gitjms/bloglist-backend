@@ -6,7 +6,6 @@ commentRouter.post('/:id/comments', async (request, response) => {
   const body = request.body
 
   const blog = await Blog.findById(body.blog)
-  console.log('body: ',body)
 
   const comment = new Comment({
     content: body.content,

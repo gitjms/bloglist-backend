@@ -18,11 +18,19 @@ const password_strength = (password) => {
 
 userRouter.get('/', async (request, response) => {
   const users = await User.find({})
-    .populate('blogs', { url: 1, title: 1, author: 1 })
+    .populate('blogs', { title: 1, url: 1, author: 1 })
   response.json(users.map(user => ({
     blogs: user.blogs.map(blog => ({
-      url: blog.url, title: blog.title, author: blog.author, id: blog.id
-    })), username: user.username, name: user.name, id: user.id
+      title: blog.title,
+      url: blog.url,
+      author: blog.author,
+      likes: blog.likes,
+      comments: blog.comments,
+      id: blog.id
+    })),
+    username: user.username,
+    name: user.name,
+    id: user.id
   })))
 })
 

@@ -31,8 +31,7 @@ app.use(middleware.custom_morgan)
 app.use(middleware.tokenExtractor)
 
 app.use('/api/login', loginRouter)
-app.use('/api/blogs', blogRouter)
-app.use('/api/blogs', commentRouter)
+app.use('/api/blogs', blogRouter, commentRouter)
 app.use('/api/users', userRouter)
 
 if (process.env.NODE_ENV === 'test') {
