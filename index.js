@@ -15,5 +15,5 @@ http.createServer(app).listen(config.PORT)
 const server = https.createServer(options, app)
 
 server.listen(8000, () => {
-  logger.info(`Server running on port ${8000}`)
+  logger.info(`Server running on port ${config.PORT}`)
 })
